@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
 
 const NOTION_KEY = process.env.NOTION_API_KEY;
-const PAGE_ID = process.env.NOTION_PAGE_ID; // Add this to your .env.local file
+const PAGE_ID = process.env.NOTION_PAGE_ID;
+const CACHE_DURATION = 60 * 60; // 1 hour
 
 const notion = new Client({ auth: NOTION_KEY });
 
@@ -32,7 +33,9 @@ export async function GET() {
       return null;
     }).filter(Boolean);
 
-    return NextResponse.json(formattedBlocks);
+    const cachedResponse = NextResponse.json(formattedBlocks);
+    cachedResponse.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
+    return cachedResponse;
   } catch (error) {
     console.error('Failed to fetch Notion content:', error);
     return NextResponse.json({ error: 'Failed to fetch Notion content' }, { status: 500 });

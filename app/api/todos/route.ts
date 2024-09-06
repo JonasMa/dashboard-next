@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 const API_KEY = process.env.CLICKUP_API_KEY;
+const CACHE_DURATION = 60 * 60; // 1 hour
 
 export async function GET() {
   try {
@@ -66,7 +67,7 @@ export async function GET() {
     }
 
     // Filter and format tasks
-    const relevantTasks = allTasks.map(task => ({
+    const todos = allTasks.map(task => ({
       id: task.id,
       name: task.name,
       status: task.status ? task.status.status : 'Unknown',
@@ -76,9 +77,16 @@ export async function GET() {
       space: task.space ? task.space.name : 'Unknown Space',
     }));
 
-    return NextResponse.json(relevantTasks);
+    const cachedResponse = NextResponse.json(todos);
+    cachedResponse.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
+    return cachedResponse;
   } catch (error: any) {
     console.error('Failed to fetch todos:', error.response ? error.response.data : error.message);
     return NextResponse.json({ error: 'Failed to fetch todos', details: error.response ? error.response.data : error.message }, { status: 500 });
   }
 }
+
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const runtime = 'nodejs';

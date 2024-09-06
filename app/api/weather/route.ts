@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
+const CACHE_DURATION = 60 * 60; // 1 hour
+
 export async function GET() {
   try {
     const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
@@ -43,7 +45,9 @@ export async function GET() {
       }))
     };
 
-    return NextResponse.json(weatherData);
+    const response = NextResponse.json(weatherData);
+    response.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
+    return response;
   } catch (error: any) {
     console.error('Failed to fetch weather data:', error.response?.data || error.message);
     if (error.response?.status === 401) {
@@ -55,3 +59,8 @@ export async function GET() {
     }
   }
 }
+
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const runtime = 'nodejs';
