@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Paper, Typography, Stack } from "@mui/material";
 import Link from 'next/link';
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import WeatherWidget from "./WeatherWidget";
@@ -8,30 +8,50 @@ import RefreshButton from "./RefreshButton";
 
 const Dashboard = () => {
   return (
-    <div className="dashboard">
-      <h1>My Dashboard</h1>
-      <RefreshButton />
-      <div className="widget-container">
-        <Box
-          className="dashboard"
-          sx={{ width: "100%", maxWidth: "800px", margin: "auto" }}
-        >
-          <Suspense fallback={<div>Loading weather...</div>}>
-            <WeatherWidget />
-          </Suspense>
-          <Suspense fallback={<div>Loading Notion content...</div>}>
-            <NotionWidget />
-          </Suspense>
+    <Box className="dashboard" sx={{ 
+      maxWidth: 1200, 
+      margin: 'auto', 
+      padding: 3,
+      backgroundColor: '#f5f5f5',
+      minHeight: '100vh'
+    }}>
+      <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#333' }}>
+            My Dashboard
+          </Typography>
+          <RefreshButton />
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-          <Link href="/todos" passHref>
-            <Button variant="contained" startIcon={<ChecklistIcon />}>
-              View Todos
-            </Button>
-          </Link>
-        </Box>
-      </div>
-    </div>
+        <Stack direction="row" spacing={3}>
+          <Box flex={1}>
+            <Suspense fallback={<Paper elevation={1} sx={{ padding: 2, textAlign: 'center' }}>Loading weather...</Paper>}>
+              <WeatherWidget />
+            </Suspense>
+          </Box>
+          <Box flex={1}>
+            <Suspense fallback={<Paper elevation={1} sx={{ padding: 2, textAlign: 'center' }}>Loading Notion content...</Paper>}>
+              <NotionWidget />
+            </Suspense>
+          </Box>
+        </Stack>
+      </Paper>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Link href="/todos" passHref>
+          <Button 
+            variant="contained" 
+            startIcon={<ChecklistIcon />}
+            sx={{ 
+              backgroundColor: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#115293',
+              },
+            }}
+          >
+            View Todos
+          </Button>
+        </Link>
+      </Box>
+    </Box>
   );
 };
 

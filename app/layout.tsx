@@ -1,4 +1,5 @@
 import './globals.css';
+import ThemeRegistry from './components/ThemeRegistry';
 
 export const metadata = {
   title: 'My Dashboard',
@@ -12,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ThemeRegistry>
+          {children}
+        </ThemeRegistry>
+      </body>
     </html>
   );
 }
