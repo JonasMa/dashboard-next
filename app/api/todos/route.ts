@@ -87,4 +87,3 @@ export async function GET() {
 }
 
 export const revalidate = CACHE_DURATION;
-export const dynamic = 'force-dynamic';

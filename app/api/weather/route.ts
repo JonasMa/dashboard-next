@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const CACHE_DURATION = 30 //* 60; // 30 minutes in seconds
+const CACHE_DURATION = 30 * 60; // 30 minutes in seconds
 
 export async function GET() {
   try {
@@ -60,5 +60,4 @@ export async function GET() {
   }
 }
 
-export const revalidate = CACHE_DURATION; // 30 minutes in seconds
-export const dynamic = 'force-dynamic';
+export const revalidate = CACHE_DURATION;
