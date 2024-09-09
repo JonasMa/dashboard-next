@@ -42,6 +42,16 @@ export async function getWeather(): Promise<WeatherData> {
   }
 }
 
+export async function refreshData() {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/refresh`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Failed to refresh data:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || 'Failed to refresh data');
+  }
+}
+
 export type NotionTable = string[][];
 
 export async function getFirstNotionTable(): Promise<NotionTable> {
