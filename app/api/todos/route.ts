@@ -50,6 +50,7 @@ export async function GET() {
               headers: { Authorization: API_KEY },
               params: {
                 subtasks: true,
+                start_date_gt: 1, // This excludes tasks with no start date
                 // Get tasks with start date before now or due date after start of today
                 start_date_lt: endOfToday,
                 // due_date_gt: startOfToday,
