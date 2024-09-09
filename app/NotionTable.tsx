@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import useMenuHighlight from '../hooks/useMenuHighlight';
-import { NotionTable as NotionTableType } from '../lib/api';
+import useMenuHighlight from './hooks/useMenuHighlight';
+import { NotionTable as NotionTableType } from './lib/api';
 
 interface NotionTableProps {
   notionTable: NotionTableType;
@@ -10,7 +10,6 @@ interface NotionTableProps {
 
 const NotionTable: React.FC<NotionTableProps> = ({ notionTable }) => {
   const highlightText = useMenuHighlight();
-  console.log('highlightText', highlightText);
 
   const highlightRow = (row: string[], index: number) => {
     if (index === 0) return false; // Don't highlight header

@@ -1,4 +1,4 @@
-import { getFirstNotionTable } from '../lib/api';
+import { getFirstNotionTable } from './lib/api';
 import NotionTable from './NotionTable';
 
 const NotionWidget = async () => {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button, Box, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import TodoWidget from '../components/TodoWidget';
+import TodoWidget from './TodoWidget';
 
 export default function TodosPage() {
   return (

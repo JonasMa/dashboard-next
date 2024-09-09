@@ -1,5 +1,5 @@
 import './globals.css';
-import ThemeRegistry from './components/ThemeRegistry';
+import ThemeRegistry from './ThemeRegistry';
 
 export const metadata = {
   title: 'My Dashboard',

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getWeather } from "../lib/api";
+import { getWeather } from "./lib/api";
 import {
   Card,
   CardContent,
