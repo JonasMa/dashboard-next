@@ -42,7 +42,7 @@ export async function getWeather(): Promise<WeatherData> {
   }
 }
 
-type NotionTable = string[][];
+export type NotionTable = string[][];
 
 export async function getFirstNotionTable(): Promise<NotionTable> {
   try {
