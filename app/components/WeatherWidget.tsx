@@ -1,8 +1,16 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react';
-import { getWeather } from '../lib/api';
-import { Card, CardContent, Typography, Box, Avatar, Divider, Grid } from '@mui/material';
+import { useState, useEffect } from "react";
+import { getWeather } from "../lib/api";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Avatar,
+  Divider,
+  Grid,
+} from "@mui/material";
 
 interface WeatherData {
   current: {
@@ -24,28 +32,29 @@ const WeatherLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Card className="widget weather-widget" elevation={3}>
       <CardContent>
-      <Typography variant="h5" component="h2" gutterBottom>
-            Weather
-      </Typography>
+        <Typography variant="h5" component="h2" gutterBottom>
+          Weather
+        </Typography>
         {children}
       </CardContent>
     </Card>
   );
 };
 
-const WeatherWidget = async () => {
+const WeatherWidget = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchWeatherData = async () => {
-    try {
-      const data = await getWeather();
-      setWeatherData(data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch weather data');
-      console.error(err);
-    }
+    getWeather()
+      .then((data) => {
+        setWeatherData(data);
+        setError(null);
+      })
+      .catch((err) => {
+        setError("Failed to fetch weather data");
+        console.error(err);
+      });
   };
 
   useEffect(() => {
@@ -57,9 +66,9 @@ const WeatherWidget = async () => {
   if (error) {
     return (
       <WeatherLayout>
-          <Typography variant="body1" color="error">
-            {error}
-          </Typography>
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
       </WeatherLayout>
     );
   }
@@ -94,7 +103,9 @@ const WeatherWidget = async () => {
         </Box>
         <Divider />
         <Box>
-          <Typography variant="h6" gutterBottom>Today's Forecast</Typography>
+          <Typography variant="h6" gutterBottom>
+            Today's Forecast
+          </Typography>
           <Grid container spacing={2}>
             {weatherData.forecast.map((item, index) => (
               <Grid item xs={4} key={index}>
@@ -105,7 +116,9 @@ const WeatherWidget = async () => {
                     alt={item.description}
                     sx={{ width: 40, height: 40 }}
                   />
-                  <Typography variant="body2">{Math.round(item.temperature)}°C</Typography>
+                  <Typography variant="body2">
+                    {Math.round(item.temperature)}°C
+                  </Typography>
                 </Box>
               </Grid>
             ))}
@@ -114,7 +127,6 @@ const WeatherWidget = async () => {
       </Box>
     </WeatherLayout>
   );
-
 };
 
 export default WeatherWidget;
