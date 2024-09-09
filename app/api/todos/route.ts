@@ -5,23 +5,9 @@ const API_KEY = process.env.CLICKUP_API_KEY;
 const CACHE_DURATION = 60 * 60 * 24; // 1 day
 
 export async function GET() {
-  try {
-    // Get the user's teams
-    const teamsResponse = await axios.get('https://api.clickup.com/api/v2/team', {
-      headers: { Authorization: API_KEY },
-    });
-
-    if (!teamsResponse.data.teams || teamsResponse.data.teams.length === 0) {
-      console.error('No teams found in the response');
-      return NextResponse.json({ error: 'No teams found' }, { status: 404 });
-    }
-
-    const teamId = teamsResponse.data.teams[0].id;
-
-    let allTasks: any[] = [];
-
+  try {   
     // Get all spaces in the team
-    const spacesResponse = await axios.get(`https://api.clickup.com/api/v2/team/${teamId}/space`, {
+    const spacesResponse = await axios.get('https://api.clickup.com/api/v2/team/9012054739/space', {
       headers: { Authorization: API_KEY },
     });
 
@@ -31,11 +17,10 @@ export async function GET() {
     }
 
     const spaces = spacesResponse.data.spaces;
-
-    const now = new Date();
+    
     const endOfToday = new Date().setHours(23, 59, 59, 999);
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
+    let allTasks: any[] = [];
     // For each space, get all lists
     for (const space of spaces) {
       try {
