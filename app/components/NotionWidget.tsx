@@ -1,28 +1,30 @@
-import { getNotionContent } from '../lib/api';
+import { getFirstNotionTable } from '../lib/api';
 
 const NotionWidget = async () => {
-  const notionContent = await getNotionContent();
+  const notionTable = await getFirstNotionTable();
 
   return (
     <div className="widget notion-widget">
       <h2>Notion Content</h2>
-      {notionContent.length > 0 ? (
-        <div>
-          {notionContent.map((block: any) => {
-            switch (block.type) {
-              case 'paragraph':
-                return <p key={block.id}>{block.content}</p>;
-              case 'heading_1':
-                return <h1 key={block.id}>{block.content}</h1>;
-              case 'heading_2':
-                return <h2 key={block.id}>{block.content}</h2>;
-              case 'heading_3':
-                return <h3 key={block.id}>{block.content}</h3>;
-              default:
-                return null;
-            }
-          })}
-        </div>
+      {notionTable.length > 0 ? (
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              {notionTable[0].map((header, index) => (
+                <th key={index} style={{ borderBottom: '2px solid #ddd', padding: '8px', textAlign: 'left' }}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {notionTable.slice(1).map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <td key={cellIndex} style={{ borderBottom: '1px solid #ddd', padding: '8px' }}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <p>No Notion content available</p>
       )}

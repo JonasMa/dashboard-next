@@ -42,7 +42,9 @@ export async function getWeather(): Promise<WeatherData> {
   }
 }
 
-export async function getNotionContent() {
+type NotionTable = string[][];
+
+export async function getFirstNotionTable(): Promise<NotionTable> {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/notion`);
     return response.data;
