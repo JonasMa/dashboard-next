@@ -104,7 +104,7 @@ const WeatherWidget = () => {
         <Divider />
         <Box>
           <Typography variant="h6" gutterBottom>
-            Today's Forecast
+            Today&apos;s Forecast
           </Typography>
           <Grid container spacing={2}>
             {weatherData.forecast.map((item, index) => (

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
-import { BlockObjectResponse, PartialBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { BlockObjectResponse, PartialBlockObjectResponse, TableBlockObjectResponse, TableRowBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 const NOTION_KEY = process.env.NOTION_API_KEY;
 const PAGE_ID = process.env.NOTION_PAGE_ID;
@@ -9,13 +9,13 @@ const CACHE_DURATION = 60 * 60; // 1 hour
 const notion = new Client({ auth: NOTION_KEY });
 
 // Find the first table recursively
-async function findFirstTable(blocks: any[]): Promise<BlockObjectResponse | null> {
+async function findFirstTable(blocks: (BlockObjectResponse | PartialBlockObjectResponse)[]): Promise<TableBlockObjectResponse | null> {
   for (const block of blocks) {
-    if (block.type === 'table') {
-        return block;
+    if ('type' in block && block.type === 'table') {
+      return block as TableBlockObjectResponse;
     }
     
-    if (block.has_children) {
+    if ('has_children' in block && block.has_children) {
       const childBlocks = await notion.blocks.children.list({
         block_id: block.id,
         page_size: 100,
@@ -46,7 +46,7 @@ export async function GET() {
   }
 }
 
-async function getTableData(table: PartialBlockObjectResponse | BlockObjectResponse | null) {
+async function getTableData(table: TableBlockObjectResponse | null): Promise<string[][] | null> {
   if (!table) {
     return null;
   }
@@ -55,13 +55,14 @@ async function getTableData(table: PartialBlockObjectResponse | BlockObjectRespo
     block_id: table.id,
     page_size: 100,
   });
-  const tableData = tableRows.results.map((row: any) => {
-    if (row.type === 'table_row') {
-      return row.table_row.cells.map((cell: any) => cell.map((textObj: any) => textObj.plain_text).join('')
+  
+  const tableData = tableRows.results
+    .filter((row): row is TableRowBlockObjectResponse => 'type' in row && row.type === 'table_row')
+    .map((row) => {
+      return row.table_row.cells.map((cell) => 
+        cell.map((textObj) => 'plain_text' in textObj ? textObj.plain_text : '').join('')
       );
-    }
-    return null;
-  }).filter(Boolean);
+    });
 
   return tableData;
 }

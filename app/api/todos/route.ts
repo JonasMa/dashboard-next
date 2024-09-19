@@ -4,6 +4,40 @@ import axios from 'axios';
 const API_KEY = process.env.CLICKUP_API_KEY;
 const CACHE_DURATION = 60 * 60 * 24; // 1 day
 
+interface Space {
+  id: string;
+}
+
+interface List {
+  id: string;
+}
+
+interface Task {
+  id: string;
+  name: string;
+  status: {
+    status: string;
+  } | null;
+  start_date: string | null;
+  due_date: string | null;
+  list: {
+    name: string;
+  } | null;
+  space: {
+    name: string;
+  } | null;
+}
+
+interface FormattedTask {
+  id: string;
+  name: string;
+  status: string;
+  start_date: string | null;
+  due_date: string | null;
+  list: string;
+  space: string;
+}
+
 export async function GET() {
   try {   
     // Get all spaces in the team
@@ -16,11 +50,11 @@ export async function GET() {
       return NextResponse.json({ error: 'No spaces found' }, { status: 404 });
     }
 
-    const spaces = spacesResponse.data.spaces;
+    const spaces: Space[] = spacesResponse.data.spaces;
     
     const endOfToday = new Date().setHours(23, 59, 59, 999);
 
-    let allTasks: any[] = [];
+    let allTasks: Task[] = [];
     // For each space, get all lists
     for (const space of spaces) {
       try {
@@ -30,7 +64,7 @@ export async function GET() {
 
         if (listsResponse.data.lists) {
           // For each list, get tasks
-          for (const list of listsResponse.data.lists) {
+          for (const list of listsResponse.data.lists as List[]) {
             const tasksResponse = await axios.get(`https://api.clickup.com/api/v2/list/${list.id}/task`, {
               headers: { Authorization: API_KEY },
               params: {
@@ -47,13 +81,17 @@ export async function GET() {
             }
           }
         }
-      } catch (spaceError: any) {
-        console.error(`Error fetching lists or tasks for space ${space.id}:`, spaceError.response ? spaceError.response.data : spaceError.message);
+      } catch (spaceError) {
+        if (axios.isAxiosError(spaceError)) {
+          console.error(`Error fetching lists or tasks for space ${space.id}:`, spaceError.response?.data || spaceError.message);
+        } else {
+          console.error(`Error fetching lists or tasks for space ${space.id}:`, (spaceError as Error).message);
+        }
       }
     }
 
     // Filter and format tasks
-    const todos = allTasks.map(task => ({
+    const todos: FormattedTask[] = allTasks.map(task => ({
       id: task.id,
       name: task.name,
       status: task.status ? task.status.status : 'Unknown',
@@ -66,9 +104,14 @@ export async function GET() {
     const cachedResponse = NextResponse.json(todos);
     cachedResponse.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
     return cachedResponse;
-  } catch (error: any) {
-    console.error('Failed to fetch todos:', error.response ? error.response.data : error.message);
-    return NextResponse.json({ error: 'Failed to fetch todos', details: error.response ? error.response.data : error.message }, { status: 500 });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Failed to fetch todos:', error.response?.data || error.message);
+      return NextResponse.json({ error: 'Failed to fetch todos', details: error.response?.data || error.message }, { status: 500 });
+    } else {
+      console.error('Failed to fetch todos:', (error as Error).message);
+      return NextResponse.json({ error: 'Failed to fetch todos', details: (error as Error).message }, { status: 500 });
+    }
   }
 }
 

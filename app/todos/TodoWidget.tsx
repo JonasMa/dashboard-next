@@ -28,7 +28,7 @@ const TodoWidget = async () => {
       <Card className="widget todo-widget" elevation={3}>
         <CardContent>
           <Typography variant="h5" component="h2" gutterBottom>
-            Today's Todos
+            Today&apos;s Todos
           </Typography>
           {todos.length > 0 ? (
             <List>
@@ -58,16 +58,18 @@ const TodoWidget = async () => {
         </CardContent>
       </Card>
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in TodoWidget:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+
     return (
       <Card className="widget todo-widget" elevation={3}>
         <CardContent>
           <Typography variant="h5" component="h2" gutterBottom>
-            Today's Todos
+            Today&apos;s Todos
           </Typography>
           <Typography variant="body1" color="error">
-            Error loading todos: {error.message}
+            Error loading todos: {errorMessage}
           </Typography>
         </CardContent>
       </Card>

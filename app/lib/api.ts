@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return ''; // browser should use relative url
@@ -12,9 +12,12 @@ export async function getTodos() {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/todos`);
     return response.data;
-  } catch (error: any) {
-    console.error('Failed to fetch todos:', error.response ? error.response.data : error.message);
-    throw new Error(error.response ? JSON.stringify(error.response.data) : error.message);
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error('Failed to fetch todos:', error.response?.data || error.message);
+      throw new Error(error.response?.data ? JSON.stringify(error.response.data) : error.message);
+    }
+    throw error; // Re-throw if it's not an AxiosError
   }
 }
 
@@ -36,9 +39,12 @@ export async function getWeather(): Promise<WeatherData> {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/weather`);
     return response.data;
-  } catch (error: any) {
-    console.error('Failed to fetch weather data:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.error || 'Failed to fetch weather data');
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error('Failed to fetch weather data:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.error || 'Failed to fetch weather data');
+    }
+    throw error; // Re-throw if it's not an AxiosError
   }
 }
 
@@ -46,9 +52,12 @@ export async function refreshData() {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/refresh`);
     return response.data;
-  } catch (error: any) {
-    console.error('Failed to refresh data:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.error || 'Failed to refresh data');
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error('Failed to refresh data:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.error || 'Failed to refresh data');
+    }
+    throw error; // Re-throw if it's not an AxiosError
   }
 }
 
