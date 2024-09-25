@@ -72,3 +72,13 @@ export async function getFirstNotionTable(): Promise<NotionTable> {
     return [];
   }
 }
+
+export async function getClueData(): Promise<void> {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/clue`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch Notion content:', error);
+    return;
+  }
+}
