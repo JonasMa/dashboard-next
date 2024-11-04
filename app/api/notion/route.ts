@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
 import { BlockObjectResponse, PartialBlockObjectResponse, TableBlockObjectResponse, TableRowBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
+export type TaskList = Array<{
+  title: string;
+  checkboxes: Array<{
+    text: string;
+    checked: boolean;
+  }>;
+}>;
+
 const NOTION_KEY = process.env.NOTION_API_KEY;
 const PAGE_ID = process.env.NOTION_PAGE_ID;
 const CACHE_DURATION = 60 * 60; // 1 hour
@@ -27,6 +35,79 @@ async function findFirstTable(blocks: (BlockObjectResponse | PartialBlockObjectR
   return null;
 }
 
+// Find the first bulleted list item containing "Weekly Tasks"
+async function findFirstTask(blocks: (BlockObjectResponse | PartialBlockObjectResponse)[]): Promise<BlockObjectResponse | null> {
+  for (const block of blocks) {
+    if ('type' in block && 
+        block.type === 'bulleted_list_item' && 
+        block.bulleted_list_item.rich_text.some(text => 
+          'plain_text' in text && text.plain_text.includes('Weekly Tasks'))) {
+      return block;
+    }
+    
+    if ('has_children' in block && block.has_children) {
+      const childBlocks = await notion.blocks.children.list({
+        block_id: block.id,
+        page_size: 100,
+      });
+      const foundInChildren = await findFirstTask(childBlocks.results);
+      if (foundInChildren) return foundInChildren;
+    }
+  }
+  return null;
+}
+
+
+async function getBulletedListContent(block: BlockObjectResponse | null): Promise<TaskList> {
+  if (!block || !('has_children' in block) || !block.has_children) {
+    return [];
+  }
+
+  const children = await notion.blocks.children.list({
+    block_id: block.id,
+    page_size: 100,
+  });
+
+  const result = [];
+
+  for (const item of children.results) {
+    if ('type' in item && item.type === 'bulleted_list_item') {
+      const title = item.bulleted_list_item.rich_text
+        .map(text => 'plain_text' in text ? text.plain_text : '')
+        .join('');
+
+      // Get checkbox items if the bullet point has children
+      const checkboxes = [];
+      if (item.has_children) {
+        const subItems = await notion.blocks.children.list({
+          block_id: item.id,
+          page_size: 100,
+        });
+
+        for (const subItem of subItems.results) {
+          if ('type' in subItem && subItem.type === 'to_do') {
+            const text = subItem.to_do.rich_text
+              .map(text => 'plain_text' in text ? text.plain_text : '')
+              .join('');
+            checkboxes.push({
+              text,
+              checked: subItem.to_do.checked
+            });
+          }
+        }
+      }
+
+      result.push({
+        title,
+        checkboxes
+      });
+    }
+  }
+
+  return result;
+}
+
+
 export async function GET() {
   try {
     const blocks = await notion.blocks.children.list({
@@ -34,10 +115,13 @@ export async function GET() {
       page_size: 100,
     });
 
-    const taskBlock = await findFirstTable(blocks.results);
-    const tableData = await getTableData(taskBlock);
+    const taskBlock = await findFirstTask(blocks.results);
+    const taskList = await getBulletedListContent(taskBlock);
 
-    const cachedResponse = NextResponse.json(tableData);
+    const cookingBlock = await findFirstTable(blocks.results);
+    const tableData = await getTableData(cookingBlock);
+
+    const cachedResponse = NextResponse.json({taskList, tableData});
     cachedResponse.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
     return cachedResponse;
   } catch (error) {

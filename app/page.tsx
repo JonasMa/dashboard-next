@@ -1,18 +1,23 @@
 import React, { Suspense } from "react";
-import { Box, Button, Paper, Stack } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import Link from 'next/link';
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import WeatherWidget from "./WeatherWidget";
 import NotionWidget from "./NotionWidget";
 import RefreshButton from "./components/RefreshButton";
 import HeaderClock from "./HeaderClock";
+import NotionTable from "./NotionTable";
+import TaskList from "./TaskList";
+import { getFirstNotionTable } from "./lib/api";
 
-export default function Home() {
+export default async function Home() {
+
+  const { tableData, taskList } = await getFirstNotionTable();
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      <Box className="dashboard" sx={{ 
-        maxWidth: 1200, 
-        margin: 'auto', 
+      <Box className="dashboard" sx={{
+        maxWidth: 1200,
+        margin: 'auto',
         padding: 3,
         backgroundColor: '#f5f5f5',
         minHeight: '100vh'
@@ -30,17 +35,28 @@ export default function Home() {
             </Box>
             <Box flex={1}>
               <Suspense fallback={<Paper elevation={1} sx={{ padding: 2, textAlign: 'center' }}>Loading Notion content...</Paper>}>
-                <NotionWidget />
+                {tableData && <>
+                  <Typography variant="h5" sx={{ marginBottom: 2 }}>Wer kocht?</Typography>
+                  <NotionTable notionTable={tableData} />
+                </>}
+              </Suspense>
+            </Box>
+            <Box flex={1}>
+              <Suspense fallback={<Paper elevation={1} sx={{ padding: 2, textAlign: 'center' }}>Loading Notion content...</Paper>}>
+                {taskList && <>
+                  <Typography variant="h5" sx={{ marginBottom: 2 }}>Wer kocht?</Typography>
+                  <TaskList tasks={taskList} />
+                </>}
               </Suspense>
             </Box>
           </Stack>
         </Paper>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Link href="/todos" passHref>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               startIcon={<ChecklistIcon />}
-              sx={{ 
+              sx={{
                 backgroundColor: '#1976d2',
                 '&:hover': {
                   backgroundColor: '#115293',
