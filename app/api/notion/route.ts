@@ -2,13 +2,15 @@ import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
 import { BlockObjectResponse, PartialBlockObjectResponse, TableBlockObjectResponse, TableRowBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-export type TaskList = Array<{
+export interface TaskGroup {
   title: string;
-  checkboxes: Array<{
-    text: string;
-    checked: boolean;
-  }>;
-}>;
+  checkboxes: Task[];
+}[];
+
+interface Task {
+  text: string;
+  checked: boolean;
+} 
 
 const NOTION_KEY = process.env.NOTION_API_KEY;
 const PAGE_ID = process.env.NOTION_PAGE_ID;
@@ -58,7 +60,7 @@ async function findFirstTask(blocks: (BlockObjectResponse | PartialBlockObjectRe
 }
 
 
-async function getBulletedListContent(block: BlockObjectResponse | null): Promise<TaskList> {
+async function getBulletedListContent(block: BlockObjectResponse | null): Promise<TaskGroup[]> {
   if (!block || !('has_children' in block) || !block.has_children) {
     return [];
   }
@@ -91,7 +93,7 @@ async function getBulletedListContent(block: BlockObjectResponse | null): Promis
               .join('');
             checkboxes.push({
               text,
-              checked: subItem.to_do.checked
+              checked: subItem.to_do.checked,
             });
           }
         }

@@ -1,12 +1,7 @@
-interface CheckboxItem {
-  text: string;
-  checked: boolean;
-}
+'use client';
 
-interface TaskGroup {
-  title: string;
-  checkboxes: CheckboxItem[];
-}
+import { TaskGroup } from "./api/notion/route";
+
 
 interface TaskListProps {
   tasks: TaskGroup[];
