@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 const API_KEY = process.env.CLICKUP_API_KEY;
-const CACHE_DURATION = 60 * 60 * 24; // 1 day
+export const revalidate = 12 * 60 * 60; // 12 hours in seconds
 
 interface Space {
   id: string;
@@ -114,5 +114,3 @@ export async function GET() {
     }
   }
 }
-
-export const revalidate = CACHE_DURATION;

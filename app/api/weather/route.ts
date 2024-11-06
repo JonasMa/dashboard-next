@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const CACHE_DURATION = 30 * 60; // 30 minutes in seconds
+export const revalidate = 3 * 60 * 60; // 3 hours in seconds
 
 type ForecastItem = {
   dt: number;
@@ -71,5 +71,3 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch weather data', details: (error as Error).message }, { status: 500 });
   }
 }
-
-export const revalidate = CACHE_DURATION;
