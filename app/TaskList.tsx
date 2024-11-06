@@ -8,6 +8,9 @@ interface TaskListProps {
 }
 
 const TaskList = ({ tasks }: TaskListProps) => {
+  if(tasks.length === 0) {
+    return <p>No tasks available</p>;
+  }
   return (
     <div className="mt-4">
       {tasks.map((group, groupIndex) => (

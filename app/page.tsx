@@ -5,9 +5,11 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 import WeatherWidget from "./WeatherWidget";
 import RefreshButton from "./components/RefreshButton";
 import HeaderClock from "./HeaderClock";
-import NotionTable from "./NotionTable";
-import TaskList from "./TaskList";
 import { getFirstNotionTable } from "./lib/api";
+import TaskList from "./TaskList";
+import NotionTable from "./NotionTable";
+
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
 
