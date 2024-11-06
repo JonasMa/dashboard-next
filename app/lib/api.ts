@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { TaskList } from '../api/notion/route';
+import { TaskGroup } from '../api/notion/route';
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return ''; // browser should use relative url
@@ -64,13 +64,13 @@ export async function refreshData() {
 
 export type NotionTable = string[][];
 
-export async function getFirstNotionTable(): Promise<{taskList: TaskList, tableData: NotionTable}> {
+export async function getFirstNotionTable(): Promise<{taskList: TaskGroup[], tableData: NotionTable}> {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/notion`);
     return response.data;
   } catch (error) {
     console.error('Failed to fetch Notion content:', error);
-    return [];
+    return { taskList: [], tableData: [] };
   }
 }
 
