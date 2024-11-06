@@ -44,7 +44,7 @@ export default async function Home() {
             <Box flex={1}>
               <Suspense fallback={<Paper elevation={1} sx={{ padding: 2, textAlign: 'center' }}>Loading Notion content...</Paper>}>
                 {taskList && <>
-                  <Typography variant="h5" sx={{ marginBottom: 2 }}>Wer kocht?</Typography>
+                  <Typography variant="h5" sx={{ marginBottom: 2 }}>Wochenaufgaben</Typography>
                   <TaskList tasks={taskList} />
                 </>}
               </Suspense>
