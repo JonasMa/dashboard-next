@@ -3,6 +3,7 @@ import { Client } from '@notionhq/client';
 import { BlockObjectResponse, PartialBlockObjectResponse, TableBlockObjectResponse, TableRowBlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export const revalidate = 60 * 60 * 6; // Revalidate every 6 hours (in seconds)
+
 export interface TaskGroup {
   title: string;
   checkboxes: Task[];

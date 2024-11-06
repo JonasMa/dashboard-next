@@ -57,7 +57,7 @@ export async function GET() {
     };
 
     const response = NextResponse.json(weatherData);
-    response.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
+    response.headers.set('Cache-Control', `s-maxage=${revalidate}, stale-while-revalidate`);
     return response;
   } catch (error: unknown) {
     console.error('Failed to fetch weather data:', (error as Error).message);

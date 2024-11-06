@@ -102,7 +102,7 @@ export async function GET() {
     }));
 
     const cachedResponse = NextResponse.json(todos);
-    cachedResponse.headers.set('Cache-Control', `s-maxage=${CACHE_DURATION}, stale-while-revalidate`);
+    cachedResponse.headers.set('Cache-Control', `s-maxage=${revalidate}, stale-while-revalidate`);
     return cachedResponse;
   } catch (error) {
     if (axios.isAxiosError(error)) {
