@@ -3,7 +3,6 @@ import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import Link from 'next/link';
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import WeatherWidget from "./WeatherWidget";
-import NotionWidget from "./NotionWidget";
 import RefreshButton from "./components/RefreshButton";
 import HeaderClock from "./HeaderClock";
 import NotionTable from "./NotionTable";
