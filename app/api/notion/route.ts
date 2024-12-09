@@ -43,8 +43,8 @@ async function findFirstTable(blocks: (BlockObjectResponse | PartialBlockObjectR
 async function findFirstTask(blocks: (BlockObjectResponse | PartialBlockObjectResponse)[]): Promise<BlockObjectResponse | null> {
   for (const block of blocks) {
     if ('type' in block && 
-        block.type === 'bulleted_list_item' && 
-        block.bulleted_list_item.rich_text.some(text => 
+        block.type === 'paragraph' && 
+        block.paragraph.rich_text.some(text => 
           'plain_text' in text && text.plain_text.includes('Weekly Tasks'))) {
       return block;
     }
